@@ -1,22 +1,33 @@
 import { Hono } from "hono";
-
+import dayjs from "dayjs";
 import { success } from "../utils/response";
 
 
 import * as z from 'zod'
 import { sValidator } from '@hono/standard-validator'
 
-const schema = z.object({
-  name: z.string(),
-  age: z.number(),
+const generateSchema = z.object({
+  mounth: z.number().min(1).max(12),
+  startDay: z.number().min(1).max(31),
+  intervalDays: z.number().min(1),
 })
 const restDay = new Hono()
 
 
-restDay.post('/generate', sValidator('json', schema), async (c) => {
+restDay.post('/generate', sValidator('json', generateSchema), async (c) => {
     const body = await c.req.valid('json')
-    console.log('body',body)
-    return c.json(success({ body }, "服务正常运行"))
+const { mounth, startDay, intervalDays } = body
+
+  const baseDate = dayjs(`${mounth}`).date(startDay)
+  const endDate = dayjs(`${mounth}`).endOf('month')
+  const list: string[] = []
+
+  let current = baseDate.clone()
+  while (current.valueOf() <= endDate.valueOf()) {
+    list.push(current.format('YYYY-MM-DD'))
+    current = current.add(intervalDays, 'day')
+  }
+    return c.json(success(list))
 })
 
 export default restDay

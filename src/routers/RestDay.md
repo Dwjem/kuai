@@ -1,9 +1,9 @@
 # 休息排班生成
 
 ## /generate，生成接口
-+ mounth：哪个月的排班
-+ startDay：从｛mounth｝月的哪一天开始
-+ intervalDays：休息日间隔
++ mounth ：哪个月的排班
++ startDay ：从｛mounth｝月的哪一天开始
++ intervalDays ：休息日间隔
 
 ## /update,更新列表
 
