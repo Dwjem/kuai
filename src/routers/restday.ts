@@ -14,7 +14,9 @@ dayjs.extend(customParseFormat);
 // 生成休息日列表的参数校验规则
 const generateSchema = z.object({
   year_month: z.string().regex(/^\d{4}\/\d{2}$/, "格式必须是 YYYY/MM，例如 2026/10"),
+  // 从这个月的哪一天开始计算休息日
   start: z.coerce.number().min(1).max(31),
+  // 一轮周期是几天
   yilun: z.coerce.number().min(1),
 })
 
@@ -22,17 +24,20 @@ const generateSchema = z.object({
 // 修改休息日列表的参数校验规则
 const updateSchema = z.object({
   year_month: z.string().regex(/^\d{4}\/\d{2}$/, "格式必须是 YYYY/MM，例如 2026/10"),
-  start: z.number().min(1).max(31),
-  yilun: z.number().min(1),
+  // 从这个月的哪一天开始计算休息日
+  start: z.coerce.number().min(1).max(31),
+  // 一轮周期是几天
+  yilun: z.coerce.number().min(1),
   // 需要修改的休息日
   oldDay: z.string().regex(/^\d{2}\/\d{2}$/),
-  newDay: z.number().min(1).max(31),
+  newDay: z.coerce.number().min(1).max(31),
   //源数据列表
   list: z.array(z.string().regex(/^\d{2}\/\d{2}$/)),
 })
 
 // 修改休息日列表的参数校验规则
 const addSchema = z.object({
+  // 需要添加的休息日, 多个休息日使用换行分隔
   day: z.preprocess(
     (val) => {
       if (typeof val !== "string") return val
@@ -47,6 +52,7 @@ const addSchema = z.object({
         .refine((d) => dayjs(d, "YYYY/MM/DD", true).isValid(), { message: "非法日期" })
     ).min(1, { message: "至少传入一个日期" })
   ),
+  // 源数据列表
   list: z.array(z.string().regex(/^\d{4}\/\d{2}\/\d{2}$/)),
 })
 
@@ -69,7 +75,6 @@ restDay.get('/generate', sValidator('query', generateSchema), (c) => {
   const list: string[] = []
 
   let current = baseDate.clone()
-  console.log(current)
 
   while (current.valueOf() <= endDate.valueOf()) {
     list.push(current.format('YYYY/MM/DD'))

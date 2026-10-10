@@ -2,7 +2,12 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kuai",
   "main": "src/index.ts",
-  "compatibility_date": "2026-10-09"
+  "compatibility_date": "2026-10-09",
+  "preview_urls": false,
+  "route":{
+    "custom_domain": true,
+    "pattern": "kuai.shandian.qzz.io"
+  }
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
